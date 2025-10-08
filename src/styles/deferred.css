@@ -1,0 +1,180 @@
+/* Deferred CSS - Non-critical styles loaded after page load */
+
+/* Carousel and slider styles */
+.carousel-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.carousel-track {
+  display: flex;
+  transition: transform 0.3s ease;
+}
+
+.carousel-slide {
+  flex: 0 0 100%;
+  min-width: 0;
+}
+
+/* Photo reviews specific styles */
+.photo-reviews {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  padding: 2rem 0;
+}
+
+.photo-review-item {
+  position: relative;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.photo-review-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Trust badges animation */
+.trust-badge {
+  opacity: 0;
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+.trust-badge:nth-child(1) { animation-delay: 0.1s; }
+.trust-badge:nth-child(2) { animation-delay: 0.2s; }
+.trust-badge:nth-child(3) { animation-delay: 0.3s; }
+.trust-badge:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile sticky CTA animations */
+.sticky-cta-enter {
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+}
+
+.sticky-cta-enter-active {
+  transform: translateY(0);
+}
+
+/* Progress bar animations */
+.progress-bar {
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-bar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+/* Toast notifications */
+.toast-enter {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: all 0.3s ease;
+}
+
+.toast-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toast-exit {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.3s ease;
+}
+
+.toast-exit-active {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+/* Menu section animations */
+.menu-item-enter {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.4s ease;
+}
+
+.menu-item-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Checkout form animations */
+.form-field-enter {
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: all 0.3s ease;
+}
+
+.form-field-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Loading states */
+.loading-skeleton {
+  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Responsive design enhancements */
+@media (max-width: 640px) {
+  .photo-reviews {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.75rem;
+  }
+  
+  .carousel-slide {
+    padding: 0 0.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .photo-reviews {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+}
+
+/* Print styles - minimal for better performance */
+@media print {
+  .sticky-cta,
+  .mobile-sticky,
+  .carousel-container,
+  .photo-reviews {
+    display: none !important;
+  }
+}

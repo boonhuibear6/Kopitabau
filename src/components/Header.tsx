@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { TrustBadges } from "./TrustBadges";
 
 interface HeaderProps {
   cartCount: number;
@@ -70,7 +71,7 @@ export const Header = ({ cartCount, onCartClick }: HeaderProps) => {
 
         {/* Mobile Navigation & Cart */}
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={onCartClick} className="relative h-10 w-10 sm:h-12 sm:w-12">
+          <Button variant="ghost" size="icon" onClick={onCartClick} className="relative h-11 w-11 sm:h-12 sm:w-12">
             <ShoppingCart className="h-5 w-5" />
             {cartCount > 0 && (
               <Badge className="absolute -right-1 -top-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs">
@@ -82,7 +83,7 @@ export const Header = ({ cartCount, onCartClick }: HeaderProps) => {
           {/* Mobile Menu */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="icon" className="h-10 w-10">
+              <Button variant="ghost" size="icon" className="h-11 w-11">
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
@@ -97,6 +98,7 @@ export const Header = ({ cartCount, onCartClick }: HeaderProps) => {
           </Sheet>
         </div>
       </div>
+      
     </header>
   );
 };

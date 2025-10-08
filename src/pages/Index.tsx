@@ -1,102 +1,264 @@
 import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { MenuSection } from "@/components/MenuSection";
+import { Cart } from "@/components/Cart";
 import { type CartItem } from "@/components/DrinkCustomization";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, Truck, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { toast } from "sonner";
+import { TrustBadges } from "@/components/TrustBadges";
+import { initializeGA4, trackCheckoutStart } from "@/lib/analytics";
 import heroImage from "@/assets/hero-matcha-drink.png";
 
 
 const Index = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [deliveryMethod, setDeliveryMethod] = useState<'delivery' | 'pickup'>('delivery');
+  const [hasPreviousOrder, setHasPreviousOrder] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   const handleAddToCart = (item: CartItem) => {
     setCartItems(prev => [...prev, item]);
-    toast.success("Item added to cart");
+    toast.success(`${item.name} added to cart`);
   };
+
+  const handleRemoveFromCart = (index: number) => {
+    setCartItems(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleUpdateQuantity = (index: number, quantity: number) => {
+    setCartItems(prev => prev.map((item, i) => 
+      i === index ? { ...item, quantity, totalPrice: item.basePrice * quantity } : item
+    ));
+  };
+
+  const handleCartClick = () => {
+    setIsCartOpen(true);
+  };
+
+  const handleCartClose = () => {
+    setIsCartOpen(false);
+  };
+
 
   const handleCheckout = () => {
     if (cartItems.length < 2) {
       toast.error("Minimum 2 items required to proceed");
       return;
     }
+    // Track checkout start
+    trackCheckoutStart(cartTotal);
     // Navigate to checkout page
     window.location.href = '/checkout';
   };
 
+
+  const handleRepeatLastOrder = () => {
+    try {
+      const lastOrder = localStorage.getItem('lastOrder');
+      if (lastOrder) {
+        const previousItems = JSON.parse(lastOrder);
+        setCartItems(previousItems);
+        toast.success(`Added ${previousItems.length} items from your last order`);
+      }
+    } catch (error) {
+      console.warn('Failed to load last order:', error);
+      toast.error("Failed to load last order");
+    }
+  };
+
   const cartTotal = cartItems.reduce((sum, item) => sum + (item.totalPrice * (item.quantity || 1)), 0);
 
-  // Wire demo payments script on mount (works in Vite dev)
+  // Load saved delivery method preference and check for previous orders
   useEffect(() => {
-    // Dynamic import avoids bundler issues and allows easy removal later
-    import('/payments/demo-payments.js')
-      .then((m: any) => (typeof m.initDemoPayments === 'function') && m.initDemoPayments())
-      .catch(() => {});
+    const savedMethod = localStorage.getItem('deliveryMethod') as 'delivery' | 'pickup' | null;
+    if (savedMethod) {
+      setDeliveryMethod(savedMethod);
+    }
+    
+    // Check for previous order
+    const lastOrder = localStorage.getItem('lastOrder');
+    if (lastOrder) {
+      setHasPreviousOrder(true);
+    }
+    
+    // Load cart items from localStorage
+    const savedCartItems = localStorage.getItem('cartItems');
+    if (savedCartItems) {
+      try {
+        const parsedItems = JSON.parse(savedCartItems);
+        setCartItems(parsedItems);
+      } catch (error) {
+        console.warn('Failed to load cart items:', error);
+        localStorage.removeItem('cartItems');
+      }
+    }
+    
+    // Initialize analytics
+    initializeGA4();
   }, []);
+
+  // Save delivery method preference when changed
+  useEffect(() => {
+    localStorage.setItem('deliveryMethod', deliveryMethod);
+  }, [deliveryMethod]);
+
+  // Save cart items to localStorage when cart changes
+  useEffect(() => {
+    if (cartItems.length > 0) {
+      localStorage.setItem('cartItems', JSON.stringify(cartItems));
+    } else {
+      localStorage.removeItem('cartItems');
+    }
+  }, [cartItems]);
+
+
 
   return (
     <TooltipProvider>
+      
       <div className="min-h-screen bg-background pb-24">
         {/* Announcement Bar */}
         <div className="w-full bg-primary text-primary-foreground text-center py-2 px-4 text-xs sm:text-sm font-medium">
-          Free delivery over RM60 — Today only
+          {deliveryMethod === 'delivery' ? 'Free delivery over RM60 — Today only' : 'Fresh matcha ready for pickup — Today only'}
         </div>
         
         <Header 
           cartCount={cartItems.length} 
-          onCartClick={() => {}}
+          onCartClick={handleCartClick}
         />
 
-      {/* Hero Section - Optimized for Menu Handoff */}
+        {/* Free Delivery Banner */}
+        {deliveryMethod === 'delivery' && cartTotal > 0 && cartTotal < 60 && (
+          <div className="w-full bg-green-50 border-b border-green-200 sticky top-0 z-40">
+            <div className="container px-4 py-3">
+              <div className="text-center">
+                <span className="text-sm font-medium text-green-800">
+                  Add RM{(60 - cartTotal).toFixed(2)} more for free delivery! (RM{cartTotal.toFixed(2)} / RM60)
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Free Delivery Achieved Banner */}
+        {deliveryMethod === 'delivery' && cartTotal >= 60 && (
+          <div className="w-full bg-green-100 border-b border-green-300 sticky top-0 z-40">
+            <div className="container px-4 py-3">
+              <div className="text-center">
+                <span className="text-sm font-bold text-green-800">
+                  🎉 You've earned free delivery!
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+
+      {/* Hero Section */}
       <section className="relative overflow-hidden">
-        <div className="relative min-h-[50vh] sm:min-h-[60vh]">
+        <div className="relative min-h-[60vh] sm:min-h-[70vh] max-h-[80vh]">
           <img 
             src={heroImage} 
             alt="Freshly whisked matcha drink with ice"
             className="absolute inset-0 w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/10 to-black/20" />
-          <div className="relative container h-full min-h-[50vh] sm:min-h-[60vh] flex flex-col justify-center items-center text-center md:items-start md:text-left px-4 md:pl-10 lg:pl-16 xl:pl-24 py-12">
-            <h1 className="font-playfair font-bold text-[40px] sm:text-[56px] md:text-[64px] leading-[1.1] mb-4 text-white drop-shadow-2xl max-w-4xl">
-              Freshly Whisked Matcha, Delivered Fast
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/40" />
+          
+          {/* Trust Strip - Pinned at top */}
+          <div className="absolute top-0 left-0 right-0 z-10 bg-black/20 backdrop-blur-sm border-b border-white/20">
+            <div className="container px-4 py-2">
+              <TrustBadges variant="inline" className="justify-center text-white/90" />
+            </div>
+          </div>
+
+          <div className="relative container h-full min-h-[60vh] sm:min-h-[70vh] max-h-[80vh] flex flex-col justify-center items-center text-center px-4 py-16">
+            {/* Main Headline */}
+            <h1 className="font-playfair font-bold text-[32px] sm:text-[48px] md:text-[56px] leading-[1.1] mb-3 text-white drop-shadow-2xl max-w-4xl">
+              Fresh Matcha, Ready in Minutes
             </h1>
-            <p className="font-lato text-[16px] sm:text-[18px] mb-8 text-white drop-shadow-lg max-w-xl">
-              Barista-grade matcha made to order. Reach your door in 45–75 mins.
-            </p>
             
-            <Button 
-              size="lg" 
-              className="text-base px-10 h-12 rounded-full font-medium shadow-xl"
-              onClick={() => {
-                const menuSection = document.getElementById('menu');
-                if (menuSection) {
-                  menuSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-              }}
-            >
-              Order Now
-            </Button>
+            {/* Subhead */}
+            <p className="font-lato text-[14px] sm:text-[16px] mb-4 text-white/90 drop-shadow-lg max-w-2xl">
+              Super fast! Pickup or delivery in KL area.
+            </p>
+
+            {/* Social Proof */}
+            <div className="mb-6 flex items-center justify-center gap-2 text-white/90">
+              <div className="flex items-center gap-1">
+                {[...Array(5)].map((_, i) => (
+                  <svg key={i} className="w-4 h-4 fill-current text-yellow-400" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                ))}
+              </div>
+              <span className="text-sm font-medium">5,000+ KL people love it!</span>
+            </div>
+
+            {/* Delivery/Pickup Toggle */}
+            <div className="mb-6">
+              <div className="flex items-center justify-center gap-4 mb-3">
+                <div className="flex items-center bg-white/20 backdrop-blur-sm rounded-lg p-1">
+                  <button
+                    onClick={() => setDeliveryMethod('delivery')}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+                      deliveryMethod === 'delivery'
+                        ? 'bg-white text-black shadow-sm'
+                        : 'text-white/80 hover:text-white'
+                    }`}
+                  >
+                    <Truck className="h-4 w-4" />
+                    Delivery
+                  </button>
+                  <button
+                    onClick={() => setDeliveryMethod('pickup')}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+                      deliveryMethod === 'pickup'
+                        ? 'bg-white text-black shadow-sm'
+                        : 'text-white/80 hover:text-white'
+                    }`}
+                  >
+                    <Store className="h-4 w-4" />
+                    Pickup
+                  </button>
+                </div>
+              </div>
+              <p className="text-white/80 text-sm">
+                {deliveryMethod === 'delivery' ? 'Reach your door in 45–75 mins' : 'Ready for pickup in 15–30 mins'}
+              </p>
+            </div>
+            
+            {/* CTAs */}
+            <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
+              <Button 
+                size="lg" 
+                className="flex-1 h-12 text-base font-semibold bg-green-700 hover:bg-green-800 text-white shadow-xl rounded-full"
+                onClick={() => {
+                  const menuSection = document.getElementById('menu');
+                  if (menuSection) {
+                    menuSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }
+                }}
+              >
+                Order Now
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline"
+                className="flex-1 h-12 text-base font-medium bg-white/90 hover:bg-white text-gray-900 border-2 border-white/50 shadow-xl rounded-full"
+                onClick={() => {
+                  const menuSection = document.getElementById('menu');
+                  if (menuSection) {
+                    menuSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }
+                }}
+              >
+                View Menu
+              </Button>
+            </div>
           </div>
           
-          {/* Scroll Cue Arrow */}
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce">
-            <button 
-              onClick={() => {
-                const menuSection = document.getElementById('menu');
-                if (menuSection) {
-                  menuSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-              }}
-              className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-full p-3 hover:bg-white/30 transition-colors"
-              aria-label="Scroll to menu"
-            >
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-              </svg>
-            </button>
-          </div>
         </div>
       </section>
 
@@ -107,33 +269,6 @@ const Index = () => {
         </svg>
       </div>
 
-      {/* Smart Toast & Add-on Sheet - portal in page */}
-      <div id="smart-toast" className="fixed left-1/2 -translate-x-1/2 bottom-[88px] z-[1000] hidden">
-        <div className="bg-white border rounded-xl shadow-xl px-3 py-2 min-w-[320px] max-w-[90vw]">
-          <div className="flex items-center gap-2">
-            <span className="text-lg">✅</span>
-            <div className="flex-1 min-w-0">
-              <div id="toast-title" className="font-semibold truncate">Added</div>
-              <div id="toast-sub" className="text-xs text-muted-foreground truncate">Variants</div>
-            </div>
-            <button id="toast-undo" className="text-primary text-sm">Undo</button>
-            <button id="toast-cart" className="text-primary text-sm">View cart</button>
-          </div>
-        </div>
-      </div>
-      <div id="addon-sheet" className="fixed left-0 right-0 bottom-0 z-[999] hidden">
-        <div className="mx-auto max-w-md w-full bg-white border-t rounded-t-xl shadow-2xl p-4" style={{height: '180px'}}>
-          <div className="flex items-center justify-between mb-2">
-            <div className="font-semibold">Popular add-ons</div>
-            <button id="addon-close" className="text-sm text-muted-foreground">Maybe later</button>
-          </div>
-          <div className="flex gap-2 flex-wrap">
-            <button data-addon="Oat" data-price="2" className="px-3 py-1 rounded-full border">Oat +RM2</button>
-            <button data-addon="Azuki" data-price="2" className="px-3 py-1 rounded-full border">Azuki +RM2</button>
-            <button data-addon="Cream Cloud" data-price="3" className="px-3 py-1 rounded-full border">Cream Cloud +RM3</button>
-          </div>
-        </div>
-      </div>
 
       {/* Menu Section */}
       <section id="menu" className="container py-8 sm:py-12 px-4 bg-gradient-to-b from-hsl(142, 40%, 92%) to-white">
@@ -142,167 +277,26 @@ const Index = () => {
             Premium Matcha Drinks
           </h2>
           <p className="text-muted-foreground mb-4">
-            Crafted fresh • 45–75 min delivery • Secure checkout
+            Order in 3 steps. 15s quick checkout.
           </p>
         </div>
-        <MenuSection onAddToCart={handleAddToCart} />
+        <MenuSection onAddToCart={handleAddToCart} cartItemCount={cartItems.length} />
       </section>
 
-      {/* Checkout Placeholder */}
-      <section id="checkout" className="container py-12 px-4 text-center">
-        <div className="max-w-md mx-auto p-8 bg-muted rounded-lg">
-          <h3 className="font-playfair text-2xl font-bold mb-2">Checkout</h3>
-          <p className="text-sm text-muted-foreground">
-            Complete your order and choose delivery details
-          </p>
-          {/* Demo Payments (toyyibPay & senangPay) */}
-          <div className="mt-6 space-y-3">
-            <div className="text-sm">Total: <span data-cart-total>{`RM${cartTotal.toFixed(2)}`}</span></div>
-            <div className="flex flex-col sm:flex-row gap-2 justify-center">
-              <Button data-pay-toyyib className="h-12">Pay with FPX (toyyibPay)</Button>
-              <Button data-pay-senang className="h-12">Pay with FPX / e-Wallet (senangPay)</Button>
-            </div>
-            {/* Hidden senangPay form (sandbox) */}
-            <form id="senangForm" method="POST" action="https://sandbox.senangpay.my/payment/YOUR_MERCHANT_ID" className="hidden">
-              <input type="hidden" name="detail" value="Matcha Order" />
-              <input type="hidden" name="amount" value="0.00" />
-              <input type="hidden" name="order_id" value="" />
-              <input type="hidden" name="name" value="Demo Customer" />
-              <input type="hidden" name="email" value="demo@example.com" />
-              <input type="hidden" name="phone" value="0123456789" />
-              {/* LIVE ONLY: <input type="hidden" name="hash" value="SERVER_COMPUTED_HASH" /> */}
-            </form>
-          </div>
-        </div>
-      </section>
+      {/* Shopping Cart */}
+      <Cart 
+        isOpen={isCartOpen}
+        onClose={handleCartClose}
+        items={cartItems}
+        onRemoveItem={handleRemoveFromCart}
+        onUpdateQuantity={handleUpdateQuantity}
+        onCheckout={handleCheckout}
+      />
 
-      {/* Mobile Sticky Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-background border-t-2 border-primary/20 shadow-lg z-50 md:hidden safe-bottom">
-        <div className="px-3 py-2">
-          {/* Progress to Minimum */}
-          {cartItems.length < 2 && (
-            <div className="mb-2">
-              <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
-                <span>Add {2 - cartItems.length} more item{2 - cartItems.length !== 1 ? 's' : ''} to proceed</span>
-                <span>{cartItems.length}/2</span>
-              </div>
-              <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-primary transition-all" 
-                  style={{ width: `${(cartItems.length / 2) * 100}%` }}
-                />
-              </div>
-            </div>
-          )}
-          
-          {/* Free Delivery Progress */}
-          {cartTotal < 60 && cartTotal > 0 && (
-            <div className="mb-2 text-xs text-muted-foreground">
-              <span className="font-medium">+RM{(60 - cartTotal).toFixed(2)} to free delivery</span>
-              <div className="h-1 bg-muted rounded-full overflow-hidden mt-1">
-                <div 
-                  className="h-full bg-green-500 transition-all" 
-                  style={{ width: `${(cartTotal / 60) * 100}%` }}
-                />
-              </div>
-            </div>
-          )}
-
-          <div className="flex gap-2">
-            <Button
-              onClick={handleCheckout}
-              disabled={cartItems.length < 2}
-              className="flex-1 h-12 text-base font-medium"
-            >
-              Proceed — RM{cartTotal.toFixed(2)}
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              className="h-12 px-4 border-2"
-            >
-              <a href="https://wa.me/60123456789" target="_blank" rel="noopener noreferrer">
-                WhatsApp
-              </a>
-            </Button>
-          </div>
-
-          {/* Service Chips */}
-          <div className="flex items-center justify-center gap-2 mt-2 text-xs text-muted-foreground">
-            <span>🌿 Fresh</span>
-            <span>•</span>
-            <span>⚡ 45–75 min</span>
-            <span>•</span>
-            <span>💳 Secure</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Desktop Cart Bar */}
-      <div className="hidden md:block fixed bottom-0 left-0 right-0 bg-primary text-primary-foreground shadow-lg z-50 safe-bottom">
-        <div className="container px-4 py-2">
-          {/* Progress Indicators */}
-          <div className="flex items-center justify-between text-xs mb-2 opacity-90">
-            <div className="flex items-center gap-4">
-              {cartItems.length < 2 && (
-                <span>Need {2 - cartItems.length} more item{2 - cartItems.length !== 1 ? 's' : ''}</span>
-              )}
-              {cartTotal < 60 && cartTotal > 0 && (
-                <span>+RM{(60 - cartTotal).toFixed(2)} to free delivery</span>
-              )}
-              <span>🌿 Fresh • ⚡ 45–75 min • 💳 Secure</span>
-            </div>
-            <span>{cartItems.length} items</span>
-          </div>
-
-          <Button
-            onClick={handleCheckout}
-            disabled={cartItems.length < 2}
-            className="w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg flex items-center justify-between px-6 text-lg"
-            variant="ghost"
-          >
-            <div className="flex items-center gap-2">
-              <ShoppingCart className="h-6 w-6" />
-              <span>{cartItems.length < 2 ? `Add ${2 - cartItems.length} more to proceed` : 'Proceed to Checkout'}</span>
-            </div>
-            <span className="font-bold" data-cart-total>RM{cartTotal.toFixed(2)}</span>
-          </Button>
-        </div>
-      </div>
       </div>
     </TooltipProvider>
   );
 };
 
 export default Index;
-
-// Smart Toast implementation (queue + pause on hover)
-let toastQueue: Array<{title: string; sub?: string; onUndo?: () => void; afterHide?: () => void}> = [];
-let toastShowing = false;
-function showSmartToast(payload: {title: string; sub?: string; onUndo?: () => void; afterHide?: () => void}){
-  toastQueue.push(payload);
-  if (!toastShowing) nextToast();
-}
-function nextToast(){
-  const item = toastQueue.shift(); if (!item) return; toastShowing = true;
-  const root = document.getElementById('smart-toast'); if (!root) return; 
-  (document.getElementById('toast-title') as HTMLElement).textContent = item.title;
-  (document.getElementById('toast-sub') as HTMLElement).textContent = item.sub || '';
-  const undoBtn = document.getElementById('toast-undo');
-  const cartBtn = document.getElementById('toast-cart');
-  if (undoBtn) undoBtn.onclick = () => { item.onUndo && item.onUndo(); hideToast(true, item.afterHide); };
-  if (cartBtn) cartBtn.onclick = () => { document.querySelector('[data-open-cart]')?.dispatchEvent(new Event('click')); };
-  root.classList.remove('hidden');
-  let timer = window.setTimeout(() => hideToast(false, item.afterHide), 2500);
-  const onEnter = () => { window.clearTimeout(timer); };
-  const onLeave = () => { timer = window.setTimeout(() => hideToast(false, item.afterHide), 1200); root?.removeEventListener('mouseleave', onLeave); };
-  root.addEventListener('mouseenter', onEnter, { once: true });
-  root.addEventListener('mouseleave', onLeave);
-}
-function hideToast(viaUndo: boolean, afterHide?: () => void){
-  const root = document.getElementById('smart-toast'); if (!root) return;
-  root.classList.add('hidden'); toastShowing = false;
-  if (!viaUndo && typeof afterHide === 'function') afterHide();
-  window.setTimeout(nextToast, 100);
-}
 

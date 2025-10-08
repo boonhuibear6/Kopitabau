@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Search, Droplet, Thermometer, Milk, Sparkles, Heart, Star } from "lucide-react";
 import { DrinkCustomization, type CartItem } from "@/components/DrinkCustomization";
+import { trackViewMenu, trackQuickAdd } from "@/lib/analytics";
 
 // Drink images
 import hotCappuccino from "@/assets/drinks/hot-cappuccino.jpg";
@@ -62,14 +64,29 @@ const addOns: AddOn[] = [
 
 interface MenuSectionProps {
   onAddToCart: (item: CartItem) => void;
+  cartItemCount?: number;
 }
 
-export const MenuSection = ({ onAddToCart }: MenuSectionProps) => {
+export const MenuSection = ({ onAddToCart, cartItemCount = 0 }: MenuSectionProps) => {
   const [activeTab, setActiveTab] = useState<"classic" | "refreshing" | "addons">("classic");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDrink, setSelectedDrink] = useState<Drink | null>(null);
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   // Result count is derived; no state to avoid render loops
+
+  // Simulate loading delay for skeleton effect
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000); // 1 second delay to show skeleton
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Track initial menu view
+  useEffect(() => {
+    trackViewMenu();
+  }, []);
 
   const handleQuickAdd = (drink: Drink) => {
     const defaultItem: CartItem = {
@@ -84,31 +101,11 @@ export const MenuSection = ({ onAddToCart }: MenuSectionProps) => {
       addOns: [],
       totalPrice: drink.price,
     };
+    
+    // Track quick add
+    trackQuickAdd(drink.name);
+    
     onAddToCart(defaultItem);
-    // Smart toast & optional add-on sheet
-    try {
-      // @ts-ignore - global helper from Index
-      if (typeof showSmartToast === 'function') {
-        // @ts-ignore
-        showSmartToast({
-          title: `Added ${drink.name} (R)`,
-          sub: 'Iced • 50% ice • 50% sweet • Fresh milk',
-          onUndo: () => {
-            // naive undo: no state for quantities, so noop in demo
-          },
-          afterHide: () => {
-            const sheet = document.getElementById('addon-sheet');
-            const closeBtn = document.getElementById('addon-close');
-            if (sheet && closeBtn) {
-              sheet.classList.remove('hidden');
-              const dismiss = () => sheet.classList.add('hidden');
-              closeBtn.onclick = dismiss;
-              sheet.addEventListener('click', (e) => { if ((e.target as HTMLElement).id === 'addon-sheet') dismiss(); });
-            }
-          }
-        });
-      }
-    } catch {}
   };
 
   const handleAddOnAdd = (addOn: AddOn) => {
@@ -219,7 +216,32 @@ export const MenuSection = ({ onAddToCart }: MenuSectionProps) => {
           </div>
 
           <div className="grid grid-cols-1 gap-4 max-w-3xl mx-auto">
-            {applyFilters(classicDrinks).map((drink) => (
+            {isLoading ? (
+              // Skeleton loaders for classic drinks
+              Array.from({ length: 3 }).map((_, index) => (
+                <Card key={`skeleton-${index}`} className="overflow-hidden md:flex md:items-center md:gap-4">
+                  <div className="relative w-full h-48 md:w-28 md:h-28 shrink-0 overflow-hidden rounded-md">
+                    <Skeleton className="w-full h-full" />
+                  </div>
+                  <div className="p-4 md:p-0 md:flex-1 space-y-3">
+                    <div className="flex items-center justify-between mb-1">
+                      <Skeleton className="h-6 w-32" />
+                      <div className="flex items-center gap-2">
+                        <Skeleton className="h-4 w-16" />
+                        <Skeleton className="h-4 w-4 rounded-full" />
+                      </div>
+                    </div>
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-3/4" />
+                    <div className="flex items-center justify-between">
+                      <Skeleton className="h-6 w-20" />
+                      <Skeleton className="h-10 w-24" />
+                    </div>
+                  </div>
+                </Card>
+              ))
+            ) : (
+              applyFilters(classicDrinks).map((drink) => (
               <Card key={drink.id} className="overflow-hidden group hover:shadow-lg transition-shadow md:flex md:items-center md:gap-4">
                 <div className="relative w-full h-48 md:w-28 md:h-28 shrink-0 overflow-hidden rounded-md">
                   <img 
@@ -268,8 +290,9 @@ export const MenuSection = ({ onAddToCart }: MenuSectionProps) => {
                   </div>
                 </div>
               </Card>
-            ))}
-            {applyFilters(classicDrinks).length === 0 && (
+              ))
+            )}
+            {!isLoading && applyFilters(classicDrinks).length === 0 && (
               <div className="text-center py-8 text-muted-foreground">
                 No drinks match these filters — 
                 <Button variant="link" onClick={resetFilters} className="underline px-1">reset?</Button>
@@ -288,7 +311,32 @@ export const MenuSection = ({ onAddToCart }: MenuSectionProps) => {
           </div>
 
           <div className="grid grid-cols-1 gap-4 max-w-3xl mx-auto">
-            {applyFilters(refreshingDrinks).map((drink) => (
+            {isLoading ? (
+              // Skeleton loaders for refreshing drinks
+              Array.from({ length: 3 }).map((_, index) => (
+                <Card key={`skeleton-refreshing-${index}`} className="overflow-hidden md:flex md:items-center md:gap-4">
+                  <div className="relative w-full h-48 md:w-28 md:h-28 shrink-0 overflow-hidden rounded-md">
+                    <Skeleton className="w-full h-full" />
+                  </div>
+                  <div className="p-4 md:p-0 md:flex-1 space-y-3">
+                    <div className="flex items-center justify-between mb-1">
+                      <Skeleton className="h-6 w-32" />
+                      <div className="flex items-center gap-2">
+                        <Skeleton className="h-4 w-16" />
+                        <Skeleton className="h-4 w-4 rounded-full" />
+                      </div>
+                    </div>
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-3/4" />
+                    <div className="flex items-center justify-between">
+                      <Skeleton className="h-6 w-20" />
+                      <Skeleton className="h-10 w-24" />
+                    </div>
+                  </div>
+                </Card>
+              ))
+            ) : (
+              applyFilters(refreshingDrinks).map((drink) => (
               <Card key={drink.id} className="overflow-hidden group hover:shadow-lg transition-shadow md:flex md:items-center md:gap-4">
                 <div className="relative w-full h-48 md:w-28 md:h-28 shrink-0 overflow-hidden rounded-md">
                   <img 
@@ -337,8 +385,9 @@ export const MenuSection = ({ onAddToCart }: MenuSectionProps) => {
                   </div>
                 </div>
               </Card>
-            ))}
-            {applyFilters(refreshingDrinks).length === 0 && (
+              ))
+            )}
+            {!isLoading && applyFilters(refreshingDrinks).length === 0 && (
               <div className="text-center py-8 text-muted-foreground">
                 No drinks match these filters — 
                 <Button variant="link" onClick={resetFilters} className="underline px-1">reset?</Button>
@@ -356,7 +405,22 @@ export const MenuSection = ({ onAddToCart }: MenuSectionProps) => {
           </div>
 
           <div className="grid grid-cols-1 gap-4 max-w-3xl mx-auto">
-            {addOns.map((addOn) => (
+            {isLoading ? (
+              // Skeleton loaders for add-ons
+              Array.from({ length: 4 }).map((_, index) => (
+                <Card key={`skeleton-addon-${index}`} className="p-4">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Skeleton className="h-6 w-32" />
+                      <Skeleton className="h-4 w-20" />
+                    </div>
+                    <Skeleton className="h-6 w-16" />
+                    <Skeleton className="h-10 w-full" />
+                  </div>
+                </Card>
+              ))
+            ) : (
+              addOns.map((addOn) => (
               <Card key={addOn.id} className="p-4 hover:shadow-lg transition-shadow">
                 <div className="space-y-3">
                   <div>
@@ -377,7 +441,8 @@ export const MenuSection = ({ onAddToCart }: MenuSectionProps) => {
                   </Button>
                 </div>
               </Card>
-            ))}
+              ))
+            )}
           </div>
         </div>
       )}
@@ -386,7 +451,7 @@ export const MenuSection = ({ onAddToCart }: MenuSectionProps) => {
       <div className="flex items-center justify-center gap-3 pt-8 pb-4 text-xs text-muted-foreground">
         <span>🌿 Fresh</span>
         <span>•</span>
-        <span>⚡ 45–75 min</span>
+        <span>⚡ 15s checkout</span>
         <span>•</span>
         <span>💳 Secure</span>
       </div>
@@ -400,6 +465,7 @@ export const MenuSection = ({ onAddToCart }: MenuSectionProps) => {
             onAddToCart(item);
             setSelectedDrink(null);
           }}
+          cartItemCount={cartItemCount}
         />
       )}
     </div>

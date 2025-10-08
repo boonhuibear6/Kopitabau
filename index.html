@@ -2,13 +2,25 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
     <title>KopiTapau - Affordable Oat Milk Kopi in KL</title>
     <meta name="description" content="The one and only affordable oat milk kopi in KL. Homebased in Bukit Indah, Ampang. Customize your perfect drink with ice level, sweetness, and more!" />
     <meta name="author" content="KopiTapau" />
+    <!-- Preload critical hero image for LCP -->
+    <link rel="preload" as="image" href="/src/assets/hero-matcha-drink.png" type="image/png">
+    
+    <!-- Preconnect to external domains -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Lato:wght@300;400;700&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+    <link rel="dns-prefetch" href="https://www.google-analytics.com">
+    
+    <!-- Optimized font loading with font-display: swap -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Lato:wght@400;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    
+    <!-- Defer non-critical CSS -->
+    <link rel="preload" href="/src/styles/deferred.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/src/styles/deferred.css"></noscript>
 
     <meta property="og:title" content="KopiTapau - Affordable Oat Milk Kopi in KL" />
     <meta property="og:description" content="The one and only affordable oat milk kopi in KL. Customize your perfect drink!" />
@@ -18,6 +30,18 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@lovable_dev" />
     <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    
+    <!-- Google Analytics 4 - Deferred for better performance -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      // Defer GA4 initialization until after page load
+      window.addEventListener('load', function() {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-XXXXXXXXXX');
+      });
+    </script>
   </head>
 
   <body>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,6 +29,16 @@ const Checkout = () => {
     address: "",
     notes: ""
   });
+  
+  // Auto-focus first form field
+  const nameInputRef = useRef<HTMLInputElement>(null);
+  
+  useEffect(() => {
+    // Auto-focus the name field when component mounts
+    if (nameInputRef.current) {
+      nameInputRef.current.focus();
+    }
+  }, []);
 
   // Mock cart data - in real app, this would come from context/state
   const cartItems: CartItem[] = [
@@ -153,11 +163,13 @@ const Checkout = () => {
                 <div>
                   <Label htmlFor="name">Name *</Label>
                   <Input
+                    ref={nameInputRef}
                     id="name"
                     value={customerDetails.name}
                     onChange={(e) => setCustomerDetails(prev => ({ ...prev, name: e.target.value }))}
                     placeholder="Enter your name"
                     className="mt-1"
+                    autoComplete="name"
                   />
                 </div>
                 
@@ -165,10 +177,14 @@ const Checkout = () => {
                   <Label htmlFor="phone">Phone *</Label>
                   <Input
                     id="phone"
+                    type="tel"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     value={customerDetails.phone}
                     onChange={(e) => setCustomerDetails(prev => ({ ...prev, phone: e.target.value }))}
                     placeholder="Enter your phone number"
                     className="mt-1"
+                    autoComplete="tel"
                   />
                 </div>
                 
@@ -177,10 +193,12 @@ const Checkout = () => {
                   <Input
                     id="email"
                     type="email"
+                    inputMode="email"
                     value={customerDetails.email}
                     onChange={(e) => setCustomerDetails(prev => ({ ...prev, email: e.target.value }))}
                     placeholder="Enter your email"
                     className="mt-1"
+                    autoComplete="email"
                   />
                 </div>
                 
@@ -193,6 +211,7 @@ const Checkout = () => {
                       onChange={(e) => setCustomerDetails(prev => ({ ...prev, address: e.target.value }))}
                       placeholder="Enter delivery address"
                       className="mt-1"
+                      autoComplete="street-address"
                     />
                   </div>
                 )}
@@ -247,11 +266,35 @@ const Checkout = () => {
                 </Button>
 
                 <div className="text-center text-sm text-muted-foreground">
-                  <p>🌿 Fresh • ⚡ 45–75 min • 💳 Secure</p>
+                  <p>🌿 Fresh • ⚡ 15s checkout • 💳 Secure</p>
                 </div>
               </CardContent>
             </Card>
           </div>
+        </div>
+      </div>
+
+      {/* Mobile Sticky Bar for Checkout */}
+      <div className="fixed bottom-0 left-0 right-0 bg-green-600 text-white shadow-lg z-50 md:hidden safe-bottom">
+        <div className="px-4 py-3">
+          <div className="flex items-center justify-between mb-2">
+            <div className="text-sm">
+              <span className="font-medium">{cartItems.length} item{cartItems.length !== 1 ? 's' : ''}</span>
+              <span className="ml-2 text-white/80">• RM{total.toFixed(2)}</span>
+            </div>
+            <div className="text-xs text-white/80">
+              {deliveryOption === 'delivery' ? 'Delivery' : 'Pickup'}
+            </div>
+          </div>
+          
+          <Button 
+            onClick={handleCheckout}
+            className="w-full h-12 text-base font-semibold bg-white text-green-600 hover:bg-gray-100 disabled:bg-gray-300 disabled:text-gray-500"
+            disabled={!customerDetails.name || !customerDetails.phone || (deliveryOption === "delivery" && !customerDetails.address)}
+          >
+            <Lock className="h-4 w-4 mr-2" />
+            Proceed to Payment
+          </Button>
         </div>
       </div>
     </div>
