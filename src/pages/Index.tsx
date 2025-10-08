@@ -126,34 +126,66 @@ const Index = () => {
         />
 
         {/* Hero Section with Background Image */}
-        <section className="relative min-h-[50vh] bg-gradient-to-br from-green-50 to-green-100">
-          <div className="absolute inset-0 bg-black/10" />
-          <div className="relative container mx-auto px-4 py-16 flex flex-col justify-center items-center text-center min-h-[50vh]">
-            <h1 className="text-4xl sm:text-5xl font-bold text-gray-800 mb-4">
-              Premium Matcha Drinks
+        <section className="relative min-h-[60vh] sm:min-h-[70vh] max-h-[80vh]">
+          <img 
+            src={heroImage} 
+            alt="Freshly whisked matcha drink with ice"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/40" />
+          
+          <div className="relative container h-full min-h-[60vh] sm:min-h-[70vh] max-h-[80vh] flex flex-col justify-center items-center text-center px-4 py-16">
+            {/* Main Headline */}
+            <h1 className="font-playfair font-bold text-[32px] sm:text-[48px] md:text-[56px] leading-[1.1] mb-3 text-white drop-shadow-2xl max-w-4xl">
+              Fresh Matcha, Ready in Minutes
             </h1>
-            <p className="text-lg text-gray-600 mb-8">
-              Order in 3 steps. 15s quick checkout.
+            
+            {/* Subhead */}
+            <p className="font-lato text-[14px] sm:text-[16px] mb-4 text-white/90 drop-shadow-lg max-w-2xl">
+              Super fast! Pickup or delivery in KL area.
             </p>
-            <Button 
-              size="lg" 
-              className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-full"
-              onClick={() => {
-                const menuSection = document.getElementById('menu');
-                if (menuSection) {
-                  menuSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-              }}
-            >
-              VIEW MENU
-            </Button>
+            
+            {/* CTAs */}
+            <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
+              <Button 
+                size="lg" 
+                className="flex-1 h-12 text-base font-semibold bg-green-700 hover:bg-green-800 text-white shadow-xl rounded-full"
+                onClick={() => {
+                  const menuSection = document.getElementById('menu');
+                  if (menuSection) {
+                    menuSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }
+                }}
+              >
+                Order Now
+              </Button>
+            </div>
           </div>
         </section>
 
         {/* Wavy Divider - Organic wave connecting hero to content */}
-        <div className="relative w-full overflow-hidden bg-gradient-to-b from-green-50 to-white">
+        <div className="relative w-full overflow-hidden bg-gradient-to-b from-slate-50 to-white">
           <svg className="w-full h-24 sm:h-32 block" viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M0,0 L1440,0 L1440,120 C1200,80 1000,20 720,60 C440,100 240,40 0,80 Z" fill="hsl(142, 40%, 92%)" stroke="none" />
+          </svg>
+        </div>
+
+        {/* Premium Matcha Drinks Section */}
+        <section className="container py-8 sm:py-12 px-4 bg-gradient-to-b from-hsl(142, 40%, 92%) to-white">
+          <div className="mb-8 text-center">
+            <h2 className="font-playfair text-3xl sm:text-4xl font-bold text-foreground mb-2">
+              Premium Matcha Drinks
+            </h2>
+            <p className="text-muted-foreground mb-4">
+              Order in 3 steps. 15s quick checkout.
+            </p>
+          </div>
+        </section>
+
+        {/* Second Wavy Divider - Before product list */}
+        <div className="relative w-full overflow-hidden bg-gradient-to-b from-white to-green-50">
+          <svg className="w-full h-16 sm:h-20 block" viewBox="0 0 1440 80" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0,0 L1440,0 L1440,80 C1200,60 1000,20 720,40 C440,60 240,20 0,40 Z" fill="hsl(142, 40%, 95%)" stroke="none" />
           </svg>
         </div>
 
@@ -177,8 +209,8 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Content Section */}
-        <section id="menu" className="bg-gradient-to-b from-white to-green-50">
+        {/* Product List Section */}
+        <section id="menu" className="bg-gradient-to-b from-green-50 to-white">
           <div className="container mx-auto px-4 py-8">
             <div className="mb-6">
               <h2 className="text-2xl font-bold text-gray-800 mb-2">Classic Collection</h2>
