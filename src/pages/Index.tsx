@@ -150,6 +150,13 @@ const Index = () => {
           </div>
         </section>
 
+        {/* Wavy Divider - Organic wave connecting hero to content */}
+        <div className="relative w-full overflow-hidden bg-gradient-to-b from-green-50 to-white">
+          <svg className="w-full h-24 sm:h-32 block" viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0,0 L1440,0 L1440,120 C1200,80 1000,20 720,60 C440,100 240,40 0,80 Z" fill="hsl(142, 40%, 92%)" stroke="none" />
+          </svg>
+        </div>
+
         {/* Category Navigation */}
         <div className="bg-white border-b">
           <div className="container mx-auto px-4 py-4">
@@ -171,7 +178,7 @@ const Index = () => {
         </div>
 
         {/* Content Section */}
-        <section id="menu" className="bg-white">
+        <section id="menu" className="bg-gradient-to-b from-white to-green-50">
           <div className="container mx-auto px-4 py-8">
             <div className="mb-6">
               <h2 className="text-2xl font-bold text-gray-800 mb-2">Classic Collection</h2>
