@@ -163,29 +163,10 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Wavy Divider - Organic wave connecting hero to content */}
-        <div className="relative w-full overflow-hidden bg-gradient-to-b from-slate-50 to-white">
+        {/* Wavy Divider - Organic wave connecting hero directly to product list */}
+        <div className="relative w-full overflow-hidden bg-gradient-to-b from-slate-50 to-green-50">
           <svg className="w-full h-24 sm:h-32 block" viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M0,0 L1440,0 L1440,120 C1200,80 1000,20 720,60 C440,100 240,40 0,80 Z" fill="hsl(142, 40%, 92%)" stroke="none" />
-          </svg>
-        </div>
-
-        {/* Premium Matcha Drinks Section */}
-        <section className="container py-8 sm:py-12 px-4 bg-gradient-to-b from-hsl(142, 40%, 92%) to-white">
-          <div className="mb-8 text-center">
-            <h2 className="font-playfair text-3xl sm:text-4xl font-bold text-foreground mb-2">
-              Premium Matcha Drinks
-            </h2>
-            <p className="text-muted-foreground mb-4">
-              Order in 3 steps. 15s quick checkout.
-            </p>
-          </div>
-        </section>
-
-        {/* Second Wavy Divider - Before product list */}
-        <div className="relative w-full overflow-hidden bg-gradient-to-b from-white to-green-50">
-          <svg className="w-full h-16 sm:h-20 block" viewBox="0 0 1440 80" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0,0 L1440,0 L1440,80 C1200,60 1000,20 720,40 C440,60 240,20 0,40 Z" fill="hsl(142, 40%, 95%)" stroke="none" />
           </svg>
         </div>
 
