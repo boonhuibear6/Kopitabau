@@ -1,0 +1,124 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Background per spec: #F2F7F2 */
+    --background: 120 24% 96%;
+    --foreground: 120 15% 15%;
+
+    --card: 120 25% 98%;
+    --card-foreground: 120 15% 15%;
+
+    --popover: 120 25% 98%;
+    --popover-foreground: 120 15% 15%;
+
+    /* Primary with improved contrast: ≥3:1 vs white, text ≥4.5:1 */
+    --primary: 92 45% 35%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 100 35% 70%;
+    --secondary-foreground: 120 15% 15%;
+
+    --muted: 120 20% 92%;
+    --muted-foreground: 120 10% 45%;
+
+    --accent: 120 25% 85%;
+    --accent-foreground: 120 15% 15%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 120 20% 85%;
+    --input: 120 20% 85%;
+    --ring: 92 29% 49%;
+
+    --radius: 0.875rem;
+
+    /* Custom matcha shop tokens - Golde-inspired palette */
+    --matcha-dark: 92 32% 49%;
+    --matcha-medium: 92 40% 65%;
+    --matcha-light: 90 30% 85%;
+    --cream: 42 50% 88%;
+    --cream-dark: 42 40% 82%;
+    --warm-bg: 42 35% 95%;
+    --sage: 90 25% 75%;
+    
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(42 35% 90%) 0%, hsl(90 30% 85%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(42 35% 98%) 100%);
+    
+    /* Shadows */
+    --shadow-soft: 0 4px 20px -4px hsl(30 25% 15% / 0.08);
+    --shadow-card: 0 2px 12px -2px hsl(30 25% 15% / 0.05);
+    
+    /* Animation */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dark {
+    --background: 140 30% 12%;
+    --foreground: 120 30% 95%;
+
+    --card: 140 28% 16%;
+    --card-foreground: 120 30% 95%;
+
+    --popover: 140 28% 16%;
+    --popover-foreground: 120 30% 95%;
+
+    --primary: 130 60% 65%;
+    --primary-foreground: 140 30% 15%;
+
+    --secondary: 140 25% 22%;
+    --secondary-foreground: 120 30% 95%;
+
+    --muted: 140 25% 20%;
+    --muted-foreground: 120 15% 60%;
+
+    --accent: 130 50% 60%;
+    --accent-foreground: 120 30% 95%;
+
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 120 30% 95%;
+
+    --border: 140 25% 22%;
+    --input: 140 25% 22%;
+    --ring: 130 50% 70%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-lato;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-inter;
+  }
+}
+
+@layer utilities {
+  /* High contrast utilities for selected states */
+  .selected-pill {
+    @apply bg-primary text-primary-foreground;
+    /* Ensure minimum 3:1 contrast ratio against white background */
+    background-color: hsl(92 45% 35%);
+    color: hsl(0 0% 100%);
+  }
+  
+  .selected-pill-dark {
+    @apply bg-primary text-primary-foreground;
+    /* Ensure minimum 3:1 contrast ratio against dark background */
+    background-color: hsl(130 60% 65%);
+    color: hsl(140 30% 15%);
+  }
+}

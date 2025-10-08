@@ -1,0 +1,23 @@
+<!-- Payment Buttons -->
+<div class="pay-actions" style="display:flex; gap:12px; flex-wrap:wrap; margin-top:8px;">
+  <button class="btn btn-primary" data-pay-toyyib>Pay with FPX (toyyibPay)</button>
+  <button class="btn btn-primary" data-pay-senang>Pay with FPX / e-Wallet (senangPay)</button>
+  <!-- The cart total element should exist elsewhere: <span data-cart-total>RM27.00</span> -->
+  <!-- Buttons read total via data-cart-total, no selector coupling. -->
+</div>
+
+<!-- senangPay Hosted Form (Sandbox) -->
+<form id="senangForm" method="POST" action="https://sandbox.senangpay.my/payment/YOUR_MERCHANT_ID" style="display:none;">
+  <input type="hidden" name="detail" value="Matcha Order">
+  <input type="hidden" name="amount" value="0.00">
+  <input type="hidden" name="order_id" value="">
+  <input type="hidden" name="name" value="Demo Customer">
+  <input type="hidden" name="email" value="demo@example.com">
+  <input type="hidden" name="phone" value="0123456789">
+  <!-- LIVE ONLY: <input type="hidden" name="hash" value="SERVER_COMPUTED_HASH"> -->
+</form>
+
+<!-- Include demo-payments.js -->
+<script type="module" src="/payments/demo-payments.js"></script>
+
+
