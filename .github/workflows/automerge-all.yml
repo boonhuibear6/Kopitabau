@@ -1,0 +1,34 @@
+name: Auto-merge labeled PRs
+on:
+  pull_request:
+    types: [labeled, synchronize]
+
+jobs:
+  automerge:
+    if: contains(github.event.pull_request.labels.*.name, 'automerge-all')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      checks: read
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            // require all checks to be green
+            const { data } = await github.rest.checks.listForRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: pr.head.sha
+            });
+            const ok = data.check_runs.every(r =>
+              r.status === 'completed' && r.conclusion === 'success'
+            );
+            if (!ok) return; // don't merge until green
+            await github.rest.pulls.merge({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+              merge_method: 'squash'
+            });
