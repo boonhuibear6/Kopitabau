@@ -118,15 +118,21 @@ const Index = () => {
 
   return (
     <TooltipProvider>
-      <div className="min-h-screen bg-background">
+      <div className={`min-h-screen bg-background ${cartItems.length > 0 ? 'pb-16 lg:pb-0' : ''}`}>
+        {/* Top Banner */}
+        <div className="bg-green-100 text-green-800 text-center py-2 text-sm font-medium">
+          Free delivery over RM60 – Today only
+        </div>
+
         {/* Header */}
         <Header 
           cartCount={cartItems.length} 
           onCartClick={handleCartClick}
         />
 
-        {/* Hero Section with Background Image */}
+        {/* Hero Section with Background Image and Mobile Layout */}
         <section className="relative min-h-[60vh] sm:min-h-[70vh] max-h-[80vh]">
+          {/* Background Image */}
           <img 
             src={heroImage} 
             alt="Freshly whisked matcha drink with ice"
@@ -134,69 +140,57 @@ const Index = () => {
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/40" />
           
-          <div className="relative container h-full min-h-[60vh] sm:min-h-[70vh] max-h-[80vh] flex flex-col justify-center items-center text-center px-4 py-16">
-            {/* Main Headline */}
-            <h1 className="font-playfair font-bold text-[32px] sm:text-[48px] md:text-[56px] leading-[1.1] mb-3 text-white drop-shadow-2xl max-w-4xl">
-              Fresh Matcha, Ready in Minutes
-            </h1>
-            
-            {/* Subhead */}
-            <p className="font-lato text-[14px] sm:text-[16px] mb-4 text-white/90 drop-shadow-lg max-w-2xl">
-              Super fast! Pickup or delivery in KL area.
-            </p>
-            
-            {/* CTAs */}
-            <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
-              <Button 
-                size="lg" 
-                className="flex-1 h-12 text-base font-semibold bg-green-700 hover:bg-green-800 text-white shadow-xl rounded-full"
-                onClick={() => {
-                  const menuSection = document.getElementById('menu');
-                  if (menuSection) {
-                    menuSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                  }
-                }}
-              >
-                Order Now
-              </Button>
+          {/* Content Container */}
+          <div className="relative container h-full min-h-[60vh] sm:min-h-[70vh] max-h-[80vh] flex items-end justify-center">
+            <div className="w-full flex justify-center px-4 py-16">
+              {/* Hero Text - Centered at bottom */}
+              <div className="text-center max-w-2xl">
+                {/* Main Headline */}
+                <h1 className="font-playfair font-bold text-[28px] sm:text-[48px] md:text-[56px] leading-[1.1] mb-3 text-white drop-shadow-2xl">
+                  Freshly Whisked Matcha,<br />Delivered Fast
+                </h1>
+                
+                {/* Subhead */}
+                <p className="font-lato text-[14px] sm:text-[16px] mb-4 text-white/90 drop-shadow-lg">
+                  Barista-grade matcha made to order.<br />Reach your door in 45-75 mins.
+                </p>
+                
+                {/* CTAs */}
+                <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md mx-auto">
+                  <Button 
+                    size="lg" 
+                    className="flex-1 h-12 text-base font-semibold bg-green-700 hover:bg-green-800 text-white shadow-xl rounded-full"
+                    onClick={() => {
+                      const menuSection = document.getElementById('menu');
+                      if (menuSection) {
+                        menuSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      }
+                    }}
+                  >
+                    Order Now
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Scroll Indicator */}
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
+            <div className="w-8 h-8 bg-gray-200/80 rounded-full flex items-center justify-center">
+              <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+              </svg>
             </div>
           </div>
         </section>
 
-        {/* Wavy Divider - Organic wave connecting hero directly to product list */}
-        <div className="relative w-full overflow-hidden bg-gradient-to-b from-slate-50 to-green-50">
-          <svg className="w-full h-24 sm:h-32 block" viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0,0 L1440,0 L1440,120 C1200,80 1000,20 720,60 C440,100 240,40 0,80 Z" fill="hsl(142, 40%, 92%)" stroke="none" />
-          </svg>
-        </div>
-
-        {/* Category Navigation */}
-        <div className="bg-white border-b">
-          <div className="container mx-auto px-4 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex space-x-4">
-                <button className="px-4 py-2 bg-green-100 text-gray-800 rounded-full text-sm font-medium">
-                  CLASSIC 5
-                </button>
-                <button className="px-4 py-2 text-gray-600 hover:text-gray-800 text-sm font-medium">
-                  REFRESHING 5
-                </button>
-                <button className="px-4 py-2 text-gray-600 hover:text-gray-800 text-sm font-medium">
-                  ADD-ONS 5
-                </button>
-              </div>
-              <span className="text-sm text-gray-500">5 results</span>
-            </div>
-          </div>
-        </div>
 
         {/* Product List Section */}
-        <section id="menu" className="bg-gradient-to-b from-green-50 to-white">
+        <section id="menu" className="bg-gradient-to-b from-white to-green-50">
           <div className="container mx-auto px-4 py-8">
             <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">Classic Collection</h2>
-              <p className="text-green-600 text-sm mb-1">Milky • Creamy, smooth & lightly sweetened with milk.</p>
-              <p className="text-green-600 text-sm">All drinks served iced by default — choose Hot if you prefer.</p>
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">Full Menu</h2>
+              <p className="text-green-600 text-sm mb-1">Crafted fresh • 45-75 min delivery • Secure checkout</p>
             </div>
             <MenuSection onAddToCart={handleAddToCart} cartItemCount={cartItems.length} />
           </div>
@@ -211,6 +205,34 @@ const Index = () => {
           onUpdateQuantity={handleUpdateQuantity}
           onCheckout={handleCheckout}
         />
+
+        {/* Sticky Bottom Cart Bar - Mobile Only */}
+        {cartItems.length > 0 && (
+          <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50 lg:hidden">
+            <div className="flex items-center justify-between px-4 py-3">
+              {/* Cart Summary */}
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
+                  <ShoppingCart className="w-5 h-5 text-green-600" />
+                  <span className="text-sm font-medium text-gray-700">
+                    {cartItems.length} {cartItems.length === 1 ? 'Item' : 'Items'}
+                  </span>
+                </div>
+                <div className="text-sm font-semibold text-gray-900">
+                  RM{cartTotal.toFixed(2)}
+                </div>
+              </div>
+              
+              {/* Checkout Button */}
+              <Button 
+                onClick={handleCheckout}
+                className="bg-green-700 hover:bg-green-800 text-white px-6 py-2 rounded-full font-semibold"
+              >
+                Checkout
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </TooltipProvider>
   );

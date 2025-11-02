@@ -8,35 +8,44 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Background per spec: #F2F7F2 */
-    --background: 120 24% 96%;
+    /* Neighbor Palette Colors */
+    /* #4B7538 (Green) - Primary */
+    /* #535700 (Dark Olive Green) - Secondary */
+    /* #8A8550 (Olive Drab) - Accent */
+    /* #BCB9A7 (Light Grayish Green/Tan) - Background, Muted, Border, Input */
+    
+    --background: 52 14% 70%; /* #BCB9A7 */
     --foreground: 120 15% 15%;
 
-    --card: 120 25% 98%;
+    --card: 52 14% 75%; /* Slightly lighter than background for contrast */
     --card-foreground: 120 15% 15%;
 
-    --popover: 120 25% 98%;
+    --popover: 52 14% 75%;
     --popover-foreground: 120 15% 15%;
 
-    /* Primary with improved contrast: ≥3:1 vs white, text ≥4.5:1 */
+    /* Primary: #4B7538 (Green) */
     --primary: 92 45% 35%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 100 35% 70%;
-    --secondary-foreground: 120 15% 15%;
+    /* Secondary: #535700 (Dark Olive Green) */
+    --secondary: 62 100% 17%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 120 20% 92%;
+    /* Muted: #BCB9A7 (Light Grayish Green/Tan) */
+    --muted: 52 14% 70%;
     --muted-foreground: 120 10% 45%;
 
-    --accent: 120 25% 85%;
+    /* Accent: #8A8550 (Olive Drab) */
+    --accent: 56 26% 43%;
     --accent-foreground: 120 15% 15%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 120 20% 85%;
-    --input: 120 20% 85%;
-    --ring: 92 29% 49%;
+    /* Border & Input: #BCB9A7 */
+    --border: 52 14% 65%;
+    --input: 52 14% 65%;
+    --ring: 92 45% 35%; /* Use primary color for focus ring */
 
     --radius: 0.875rem;
 
@@ -98,11 +107,16 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground font-lato;
+    @apply bg-background text-foreground;
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-inter;
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
   }
 }
 
@@ -120,5 +134,264 @@ All colors MUST be HSL.
     /* Ensure minimum 3:1 contrast ratio against dark background */
     background-color: hsl(130 60% 65%);
     color: hsl(140 30% 15%);
+  }
+}
+
+@layer components {
+  /* Card effect with shine and glow */
+  .card {
+    @apply relative overflow-hidden rounded-lg border bg-card text-card-foreground;
+    isolation: isolate;
+  }
+
+  .card__shine {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      120deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.3) 50%,
+      transparent 70%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .card:hover .card__shine {
+    opacity: 1;
+    animation: shine 1.5s ease-in-out infinite;
+  }
+
+  .card__glow {
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(
+      135deg,
+      hsla(var(--primary), 0.1),
+      hsla(var(--primary), 0.05),
+      hsla(var(--primary), 0.1)
+    );
+    border-radius: inherit;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    filter: blur(8px);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .card:hover .card__glow {
+    opacity: 1;
+  }
+
+  .card__content {
+    @apply relative z-10;
+  }
+
+  .card__badge {
+    @apply absolute top-2 left-2 z-20 px-2 py-1 text-xs font-semibold rounded-md;
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+  }
+
+  .card__image {
+    @apply relative w-full aspect-[3/4] overflow-hidden rounded-md;
+    background-color: var(--bg-color, hsl(var(--muted)));
+  }
+
+  .card__text {
+    @apply p-3 space-y-2;
+  }
+
+  .card__title {
+    @apply font-semibold text-sm text-foreground mb-1;
+  }
+
+  .card__description {
+    @apply text-xs text-muted-foreground line-clamp-2;
+  }
+
+  .card__footer {
+    @apply p-3 pt-0 space-y-2;
+  }
+
+  .card__price {
+    @apply text-base font-bold text-foreground;
+  }
+
+  .card__button {
+    @apply w-8 h-8 rounded-full flex items-center justify-center;
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    transition: transform 0.2s ease;
+  }
+
+  .card__button:hover {
+    transform: scale(1.1);
+  }
+
+  @keyframes shine {
+    0% {
+      transform: translateX(-100%) translateY(-100%) rotate(45deg);
+    }
+    100% {
+      transform: translateX(100%) translateY(100%) rotate(45deg);
+    }
+  }
+
+  /* iOS-style Checkbox Design */
+  .checkbox-container {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    background: #f8fafc;
+    border-radius: 16px;
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  }
+
+  .ios-checkbox {
+    --checkbox-size: 28px;
+    --checkbox-color: hsl(var(--primary));
+    --checkbox-bg: hsl(var(--primary) / 0.15);
+    --checkbox-border: hsl(var(--primary) / 0.5);
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .ios-checkbox input {
+    display: none;
+  }
+
+  .checkbox-wrapper {
+    position: relative;
+    width: var(--checkbox-size);
+    height: var(--checkbox-size);
+    border-radius: 8px;
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .checkbox-bg {
+    position: absolute;
+    inset: 0;
+    border-radius: 8px;
+    border: 2px solid var(--checkbox-border);
+    background: white;
+    transition: all 0.2s ease;
+  }
+
+  .checkbox-icon {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 80%;
+    height: 80%;
+    color: white;
+    transform: scale(0);
+    transition: all 0.2s ease;
+  }
+
+  .check-path {
+    stroke-dasharray: 40;
+    stroke-dashoffset: 40;
+    transition: stroke-dashoffset 0.3s ease 0.1s;
+  }
+
+  /* Checked State */
+  .ios-checkbox input:checked + .checkbox-wrapper .checkbox-bg {
+    background: var(--checkbox-color);
+    border-color: var(--checkbox-color);
+  }
+
+  .ios-checkbox input:checked + .checkbox-wrapper .checkbox-icon {
+    transform: scale(1);
+  }
+
+  .ios-checkbox input:checked + .checkbox-wrapper .check-path {
+    stroke-dashoffset: 0;
+  }
+
+  /* Hover Effects */
+  .ios-checkbox:hover .checkbox-wrapper {
+    transform: scale(1.05);
+  }
+
+  /* Active Animation */
+  .ios-checkbox:active .checkbox-wrapper {
+    transform: scale(0.95);
+  }
+
+  /* Focus Styles */
+  .ios-checkbox input:focus + .checkbox-wrapper .checkbox-bg {
+    box-shadow: 0 0 0 4px var(--checkbox-bg);
+  }
+
+  /* Color Themes */
+  .ios-checkbox.blue {
+    --checkbox-color: #3b82f6;
+    --checkbox-bg: #dbeafe;
+    --checkbox-border: #93c5fd;
+  }
+
+  .ios-checkbox.green {
+    --checkbox-color: hsl(var(--primary));
+    --checkbox-bg: hsl(var(--primary) / 0.15);
+    --checkbox-border: hsl(var(--primary) / 0.5);
+  }
+
+  .ios-checkbox.purple {
+    --checkbox-color: #8b5cf6;
+    --checkbox-bg: #ede9fe;
+    --checkbox-border: #c4b5fd;
+  }
+
+  .ios-checkbox.red {
+    --checkbox-color: #ef4444;
+    --checkbox-bg: #fee2e2;
+    --checkbox-border: #fca5a5;
+  }
+
+  /* Animation */
+  @keyframes bounce {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+  }
+
+  .ios-checkbox input:checked + .checkbox-wrapper {
+    animation: bounce 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Price animation */
+  .price-pop {
+    animation: pricePop 0.5s ease-out;
+  }
+
+  @keyframes pricePop {
+    0% {
+      transform: scale(1);
+      color: inherit;
+    }
+    20% {
+      transform: scale(1.05);
+      color: hsl(142 71% 45%);
+    }
+    40% {
+      color: hsl(142 71% 45%);
+    }
+    100% {
+      transform: scale(1);
+      color: inherit;
+    }
   }
 }

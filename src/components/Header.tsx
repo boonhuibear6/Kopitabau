@@ -1,10 +1,11 @@
-import { Coffee, ShoppingCart, Menu } from "lucide-react";
+import { ShoppingCart, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { TrustBadges } from "./TrustBadges";
+import eldmatchaLogo from "@/assets/eldmatcha-logo-new.png";
 
 interface HeaderProps {
   cartCount: number;
@@ -54,7 +55,11 @@ export const Header = ({ cartCount, onCartClick }: HeaderProps) => {
       <div className="container flex h-16 items-center justify-between px-4">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
-          <Coffee className="h-6 w-6 text-white" />
+          <img 
+            src={eldmatchaLogo} 
+            alt="ELDmatcha Logo" 
+            className="h-8 w-8 object-contain"
+          />
           <div>
             <h1 className="text-xl font-bold text-white">ELDmatcha</h1>
             <p className="text-xs text-green-100">Premium Matcha Drinks</p>
