@@ -9,6 +9,7 @@ import HowItsMade from "./pages/HowItsMade";
 import FAQ from "./pages/FAQ";
 import Checkout from "./pages/Checkout";
 import NotFound from "./pages/NotFound";
+import EldmatchaPreview from "./pages/EldmatchaPreview";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ const App = () => (
             <Route path="/how-its-made" element={<HowItsMade />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/checkout" element={<Checkout />} />
+            <Route path="/eldmatcha-preview" element={<EldmatchaPreview />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
