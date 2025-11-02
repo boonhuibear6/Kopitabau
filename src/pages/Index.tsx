@@ -10,7 +10,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { TrustBadges } from "@/components/TrustBadges";
 import { initializeGA4, trackCheckoutStart } from "@/lib/analytics";
-import heroImage from "@/assets/hero-matcha-drink.png";
+import Hero from "@/components/Hero";
 
 
 const Index = () => {
@@ -130,59 +130,8 @@ const Index = () => {
           onCartClick={handleCartClick}
         />
 
-        {/* Hero Section with Background Image and Mobile Layout */}
-        <section className="relative min-h-[60vh] sm:min-h-[70vh] max-h-[80vh]">
-          {/* Background Image */}
-          <img 
-            src={heroImage} 
-            alt="Freshly whisked matcha drink with ice"
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/40" />
-          
-          {/* Content Container */}
-          <div className="relative container h-full min-h-[60vh] sm:min-h-[70vh] max-h-[80vh] flex items-end justify-center">
-            <div className="w-full flex justify-center px-4 py-16">
-              {/* Hero Text - Centered at bottom */}
-              <div className="text-center max-w-2xl">
-                {/* Main Headline */}
-                <h1 className="font-playfair font-bold text-[28px] sm:text-[48px] md:text-[56px] leading-[1.1] mb-3 text-white drop-shadow-2xl">
-                  Freshly Whisked Matcha,<br />Delivered Fast
-                </h1>
-                
-                {/* Subhead */}
-                <p className="font-lato text-[14px] sm:text-[16px] mb-4 text-white/90 drop-shadow-lg">
-                  Barista-grade matcha made to order.<br />Reach your door in 45-75 mins.
-                </p>
-                
-                {/* CTAs */}
-                <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md mx-auto">
-                  <Button 
-                    size="lg" 
-                    className="flex-1 h-12 text-base font-semibold bg-green-700 hover:bg-green-800 text-white shadow-xl rounded-full"
-                    onClick={() => {
-                      const menuSection = document.getElementById('menu');
-                      if (menuSection) {
-                        menuSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                      }
-                    }}
-                  >
-                    Order Now
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          {/* Scroll Indicator */}
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
-            <div className="w-8 h-8 bg-gray-200/80 rounded-full flex items-center justify-center">
-              <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-              </svg>
-            </div>
-          </div>
-        </section>
+        {/* Hero Section */}
+        <Hero />
 
 
         {/* Product List Section */}

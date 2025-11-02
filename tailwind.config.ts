@@ -1,8 +1,9 @@
 import type { Config } from "tailwindcss";
+import { fontFamily } from 'tailwindcss/defaultTheme';
 
 export default {
   darkMode: ["class"],
-  content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   prefix: "",
   theme: {
     container: {
@@ -14,12 +15,28 @@ export default {
     },
     extend: {
       fontFamily: {
+        display: ['"Fraunces"', ...fontFamily.serif],
+        sans: ['"Inter"', ...fontFamily.sans],
         'inter': ['Inter', 'sans-serif'],
         'lato': ['Lato', 'sans-serif'],
         'montserrat': ['Montserrat', 'sans-serif'],
         'playfair': ['Playfair Display', 'serif'],
       },
       colors: {
+        brand: {
+          50: '#F3F7F1',
+          100: '#E9F2E6',
+          200: '#CFE4C6',
+          300: '#A8CE98',
+          400: '#7EB56A',
+          500: '#4B7538',
+          600: '#3E622F',
+          700: '#2F4B24',
+          800: '#203319',
+          900: '#15210F',
+        },
+        beige: '#F3EFE7',
+        gold: '#C7A86B',
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -67,12 +84,15 @@ export default {
       },
       boxShadow: {
         'soft': 'var(--shadow-soft)',
-        'card': 'var(--shadow-card)',
+        card: '0 8px 24px rgba(15,20,16,0.06)',
+        'card-old': 'var(--shadow-card)',
       },
       transitionProperty: {
         'smooth': 'var(--transition-smooth)',
       },
       borderRadius: {
+        xl: '1rem',
+        '2xl': '1.25rem',
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
